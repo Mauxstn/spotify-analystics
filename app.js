@@ -1,8 +1,6 @@
 // Spotify API Configuration
 const clientId = '0dc72c6d704a4ed6a04eee09782dc1eb'; // Updated client ID
-const redirectUri = window.location.href.includes('localhost') 
-    ? 'http://localhost:8000' 
-    : window.location.origin;
+const redirectUri = 'https://spotify-analystics.vercel.app/'; // Updated redirect URI
 
 // State variables
 let accessToken = '';
