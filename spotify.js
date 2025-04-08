@@ -1,6 +1,6 @@
 const SpotifyAuth = {
     clientId: '0dc72c6d704a4ed6a04eee09782dc1eb', // Updated client ID
-    redirectUri: 'https://spotify-analystics.vercel.app/', // Updated redirect URI
+    redirectUri: 'https://spotify-analystics.vercel.app/top-insights.html', // Redirect to top-insights.html
     scope: 'user-top-read user-read-currently-playing user-read-playback-state user-modify-playback-state',
     accessToken: '',
 
