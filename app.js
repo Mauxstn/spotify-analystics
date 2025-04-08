@@ -1,8 +1,8 @@
 // Spotify API Configuration
-const clientId = 'YOUR_SPOTIFY_CLIENT_ID'; // Ersetze mit deiner Client-ID
+const clientId = '0dc72c6d704a4ed6a04eee09782dc1eb'; // Updated client ID
 const redirectUri = window.location.href.includes('localhost') 
     ? 'http://localhost:8000' 
-    : 'YOUR_PRODUCTION_URL';
+    : window.location.origin;
 
 // State variables
 let accessToken = '';
@@ -505,4 +505,29 @@ function startPlayerUpdates() {
 }
 
 // Initialize the app
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const loginSection = document.getElementById('login-section');
+    const statsSection = document.getElementById('stats-section');
+
+    loginBtn.addEventListener('click', () => SpotifyAuth.login());
+    logoutBtn.addEventListener('click', () => SpotifyAuth.logout());
+
+    if (SpotifyAuth.checkForAccessToken()) {
+        loginSection.style.display = 'none';
+        statsSection.style.display = 'block';
+        fetchData();
+    } else {
+        loginSection.style.display = 'flex';
+        statsSection.style.display = 'none';
+    }
+
+    async function fetchData() {
+        const accessToken = SpotifyAuth.getAccessToken();
+        if (!accessToken) return;
+
+        // Fetch and display data from Spotify API
+        // ...existing fetch logic...
+    }
+});
