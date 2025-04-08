@@ -242,5 +242,139 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+        const accessToken = localStorage.getItem('spotify_access_token');
+
+        if (!accessToken) {
+            window.location.href = 'index.html'; // Redirect to login if no token
+        }
+
+        async function fetchTopArtists() {
+            const topArtistsDiv = document.getElementById('top-artists');
+            topArtistsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading your top artists...
+                </div>
+            `;
+
+            try {
+                const res = await fetch('https://api.spotify.com/v1/me/top/artists?limit=30', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                if (!res.ok) throw res;
+
+                const data = await res.json();
+                topArtistsDiv.innerHTML = '';
+                data.items.forEach((artist, index) => {
+                    const artistDiv = document.createElement('div');
+                    artistDiv.className = 'item';
+                    artistDiv.innerHTML = `
+                        <div class="item-rank">${index + 1}</div>
+                        <img src="${artist.images[0]?.url || 'https://via.placeholder.com/56'}" alt="${artist.name}" class="item-img">
+                        <div class="item-info">
+                            <div class="item-title">${artist.name}</div>
+                            <div class="item-subtitle">${artist.genres.join(', ') || 'No genres available'}</div>
+                        </div>
+                    `;
+                    topArtistsDiv.appendChild(artistDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching top artists:', error);
+                topArtistsDiv.innerHTML = '<div class="empty-state">Failed to load top artists</div>';
+            }
+        }
+
+        async function fetchTopTracks() {
+            const topTracksDiv = document.getElementById('top-songs');
+            topTracksDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading your top songs...
+                </div>
+            `;
+
+            try {
+                const res = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=30', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                if (!res.ok) throw res;
+
+                const data = await res.json();
+                topTracksDiv.innerHTML = '';
+                data.items.forEach((track, index) => {
+                    const trackDiv = document.createElement('div');
+                    trackDiv.className = 'item';
+                    trackDiv.innerHTML = `
+                        <div class="item-rank">${index + 1}</div>
+                        <img src="${track.album.images[0]?.url || 'https://via.placeholder.com/56'}" alt="${track.name}" class="item-img">
+                        <div class="item-info">
+                            <div class="item-title">${track.name}</div>
+                            <div class="item-subtitle">${track.artists.map(artist => artist.name).join(', ')}</div>
+                        </div>
+                    `;
+                    topTracksDiv.appendChild(trackDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching top songs:', error);
+                topTracksDiv.innerHTML = '<div class="empty-state">Failed to load top songs</div>';
+            }
+        }
+
+        async function fetchTopGenres() {
+            const topGenresDiv = document.getElementById('top-genres');
+            topGenresDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading your top genres...
+                </div>
+            `;
+
+            try {
+                const res = await fetch('https://api.spotify.com/v1/me/top/artists?limit=50', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                if (!res.ok) throw res;
+
+                const data = await res.json();
+                const genres = {};
+
+                data.items.forEach(artist => {
+                    artist.genres.forEach(genre => {
+                        genres[genre] = (genres[genre] || 0) + 1;
+                    });
+                });
+
+                const sortedGenres = Object.entries(genres)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 30);
+
+                topGenresDiv.innerHTML = '';
+                sortedGenres.forEach(([genre, count], index) => {
+                    const genreDiv = document.createElement('div');
+                    genreDiv.className = 'item';
+                    genreDiv.innerHTML = `
+                        <div class="item-rank">${index + 1}</div>
+                        <div class="item-info">
+                            <div class="item-title">${genre}</div>
+                            <div class="item-subtitle">${count} artists</div>
+                        </div>
+                    `;
+                    topGenresDiv.appendChild(genreDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching top genres:', error);
+                topGenresDiv.innerHTML = '<div class="empty-state">Failed to load top genres</div>';
+            }
+        }
+
+        // Fetch data on page load
+        fetchTopArtists();
+        fetchTopTracks();
+        fetchTopGenres();
+    </script>
 </body>
 </html>

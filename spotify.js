@@ -9,12 +9,6 @@ const SpotifyAuth = {
         window.location.href = authUrl;
     },
 
-    logout() {
-        this.accessToken = '';
-        localStorage.removeItem('spotify_access_token');
-        window.location.reload();
-    },
-
     checkForAccessToken() {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -31,6 +25,6 @@ const SpotifyAuth = {
     },
 
     getAccessToken() {
-        return this.accessToken;
+        return this.accessToken || localStorage.getItem('spotify_access_token');
     }
 };
